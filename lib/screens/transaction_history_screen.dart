@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qnb_transaction_history_ui/widgets/date_picker_button.dart';
+import 'package:qnb_transaction_history_ui/widgets/dialog_box.dart';
 import 'package:qnb_transaction_history_ui/widgets/list_view.dart';
 
 class TransactionHistoryScreen extends StatefulWidget {
@@ -10,9 +11,10 @@ class TransactionHistoryScreen extends StatefulWidget {
 }
 
 class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
-  DateTime selectedDate = DateTime.now();
+  int change = 0;
 
-  Future<Null> _selectDate(BuildContext context) async {
+  DateTime selectedDate = DateTime.now();
+  Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
@@ -22,6 +24,20 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       setState(() {
         selectedDate = picked;
       });
+  }
+
+  dialog() {
+    return DialogBox(
+      stateChange: () {
+        setState(() {
+          if (change == 1) {
+            change = 0;
+          } else {
+            change = 1;
+          }
+        });
+      },
+    );
   }
 
   @override
@@ -53,93 +69,106 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
           ),
         ),
       ),
-      child: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                color: Color(0xffEEEEEE),
-                padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 12),
-                      child: DatePickerButton(
-                        text: "${selectedDate.toLocal()}".split(' ')[0],
-                        onPressed: () {
-                          _selectDate(context);
-                        },
-                      ),
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    color: Color(0xffEEEEEE),
+                    padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        DatePickerButton(
+                          text: "${selectedDate.toLocal()}".split(' ')[0],
+                          onButtonPress: () {
+                            _selectDate(context);
+                          },
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Icon(
+                          Icons.arrow_forward,
+                          color: Color(0xffB30060),
+                          size: 20,
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        DatePickerButton(
+                          text: "${selectedDate.toLocal()}".split(' ')[0],
+                          onButtonPress: () {
+                            _selectDate(context);
+                          },
+                        ),
+                        SizedBox(
+                          width: 25,
+                        ),
+                        RaisedButton(
+                          onPressed: () {}, //onPressed Function
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(color: Colors.grey),
+                          ),
+                          child: Text(
+                            'Credit',
+                            style: TextStyle(
+                              color: Color(0xffB30060),
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Icon(
-                      Icons.arrow_forward,
+                  ),
+                  Container(
+                    height: 25,
+                    width: 80,
+                    margin: EdgeInsets.fromLTRB(30, 20, 0, 20),
+                    child: RaisedButton(
                       color: Color(0xffB30060),
-                      size: 20,
-                    ),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    DatePickerButton(
-                      text: "${selectedDate.toLocal()}".split(' ')[0],
-                      onPressed: () {
-                        _selectDate(context);
-                      },
-                    ),
-                    SizedBox(
-                      width: 15,
-                    ),
-                    RaisedButton(
-                      onPressed: () {}, //onPressed Function
+                      onPressed: () {},
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(50),
                         side: BorderSide(color: Colors.grey),
                       ),
                       child: Text(
-                        'Credit',
+                        'Today',
                         style: TextStyle(
-                          color: Color(0xffB30060),
-                          fontSize: 15,
+                          color: Colors.white,
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ),
-              Container(
-                height: 25,
-                width: 80,
-                margin: EdgeInsets.fromLTRB(30, 20, 0, 20),
-                child: RaisedButton(
-                  color: Color(0xffB30060),
-                  onPressed: () {},
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                    side: BorderSide(color: Colors.grey),
                   ),
-                  child: Text(
-                    'Today',
-                    style: TextStyle(
-                      color: Colors.white,
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    child: Container(
+                      child: Scaffold(
+                        body: MakeList(
+                          changeStateMain: () {
+                            setState(() {
+                              if (change == 0) {
+                                change = 1;
+                              } else {
+                                change = 0;
+                              }
+                            });
+                          },
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: Scaffold(
-                  body: Container(
-                    child: MakeList(),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          change == 1 ? dialog() : Container()
+        ],
       ),
     );
   }

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class DatePickerButton extends StatelessWidget {
   final String text;
-  final Function onPressed;
+  final Function onButtonPress;
 
-  const DatePickerButton({@required this.text, @required this.onPressed});
+  const DatePickerButton({@required this.text, @required this.onButtonPress});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class DatePickerButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         side: BorderSide(color: Colors.grey),
       ),
-      onPressed: () => onPressed,
+      onPressed: onButtonPress,
       child: Text(
         text,
         style: TextStyle(
